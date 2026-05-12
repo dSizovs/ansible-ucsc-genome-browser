@@ -1,0 +1,3 @@
+# Pin the project to a specific Python version to ensure consistency across
+# development environments.
+3.12

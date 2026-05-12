@@ -1,0 +1,27 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+  parallel: false
+
+platforms:
+  - name: rhel-9
+    box: generic/rocky9
+    box_version: 4.3.12
+    memory: 1024
+    cpus: 1
+    provider_raw_config_args:
+      - storage_pool_name = "molecule"
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      interpreter_python: auto_silent
+      callback_whitelist: profile_tasks, timer, yaml
+      ssh_connection:
+        pipelining: true
+verifier:
+  name: ansible

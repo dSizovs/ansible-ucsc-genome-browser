@@ -1,0 +1,12 @@
+---
+- name: Download UCSC Genome Browser install script
+  ansible.builtin.get_url:
+    url: "{{ ucsc_genome_browser_setup_script }}"
+    dest: "{{ ucsc_genome_browser_tmpdir.path }}/browserSetup.sh"
+    mode: "0700"
+    checksum: "{{ ucsc_genome_browser_setup_script_checksum | default(omit) }}"
+  changed_when: false
+
+- name: Save path to UCSC Genome Browser install script
+  ansible.builtin.set_fact:
+    ucsc_genome_browser_install_script: "{{ ucsc_genome_browser_tmpdir.path }}/browserSetup.sh"

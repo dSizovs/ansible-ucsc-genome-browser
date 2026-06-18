@@ -1,0 +1,28 @@
+---
+- name: Manage UCSC Genome browser
+  block:
+    - name: Create temporary setup directory for UCSC Genome Browser role
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: ucsc_genome_browser
+      changed_when: false
+      register: ucsc_genome_browser_tmpdir
+
+    - name: Include tasks that retrieve the UCSC Genome Browser setup script
+      ansible.builtin.include_tasks:
+        file: get-setup-script.yml
+
+    - name: Include tasks that install the UCSC Genome Browser
+      ansible.builtin.include_tasks:
+          file: install.yml
+
+    - name: Include tasks that download genome assemblies
+      ansible.builtin.include_tasks:
+        file: download.yml
+  always:
+    - name: Clean up temporary setup directory for UCSC Genome Browser role
+      ansible.builtin.file:
+        path: "{{ ucsc_genome_browser_tmpdir.path }}"
+        state: absent
+      when: ucsc_genome_browser_tmpdir is defined
+      changed_when: false

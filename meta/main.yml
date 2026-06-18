@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  namespace: usegalaxy_eu
+  role_name: ucsc_genome_browser
+  author: José Manuel Domínguez
+  description: Install the University of California Santa Cruz Genome Browser.
+  company: The Galaxy Project
+  license: MIT
+  min_ansible_version: "2.18.0"
+  platforms:
+    - name: EL
+      versions:
+        - "9"
+dependencies: []

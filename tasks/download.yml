@@ -1,0 +1,24 @@
+---
+- name: Get list of all genome assemblies
+  when: ucsc_genome_browser_assemblies == "all"
+  block:
+    - name: Ensure `jq` is installed
+      ansible.builtin.package:
+        name: jq
+        state: present
+
+    - name: Get list of all genome assemblies from UCSC Genome Browser API
+      ansible.builtin.shell:
+        cmd: "curl -L 'https://api.genome.ucsc.edu/list/ucscGenomes' | jq -r '.ucscGenomes | keys'"
+      register: ucsc_genome_browser_assemblies_from_api
+
+    - name: Convert to JSON
+      ansible.builtin.set_fact:
+        ucsc_genome_browser_assemblies: "{{ ucsc_genome_browser_assemblies_from_api.stdout | from_json }}"
+
+- name: Download genome assemblies
+  ansible.builtin.shell:
+    cmd: "env {{ ucsc_genome_browser_assemblies_env | default('') }} bash {{ ucsc_genome_browser_install_script }} -b -u mirror {{ assembly }}"
+  loop: "{{ ucsc_genome_browser_assemblies }}"
+  loop_control:
+    loop_var: assembly

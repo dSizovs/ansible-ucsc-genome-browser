@@ -1,0 +1,14 @@
+---
+- name: Check if UCSC Genome Browser is already installed
+  ansible.builtin.stat:
+    path: "/usr/local/apache/cgiInstallComplete.flag"
+  register: ucsc_genome_browser_installation_flag
+
+- name: Set fact indicating whether UCSC Genome Browser is already installed
+  ansible.builtin.set_fact:
+    ucsc_genome_browser_installed: "{{ ucsc_genome_browser_installation_flag.stat.exists }}"
+
+- name: Install UCSC Genome Browser
+  when: not ucsc_genome_browser_installed
+  ansible.builtin.shell:
+    cmd: "bash {{ ucsc_genome_browser_install_script }} -b install"

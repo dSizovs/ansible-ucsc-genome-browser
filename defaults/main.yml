@@ -3,3 +3,29 @@ ucsc_genome_browser_setup_script_checksum: "{{ undef() }}"  # e.g. "sha256:e47cd
 
 ucsc_genome_browser_assemblies: all  # e.g. ["mm10", "wuhCor1"]
 ucsc_genome_browser_assemblies_env: "{{ undef() }}"  # set environment variables (e.g. `OS=linux MACH=x86_64`) to workaround bugs
+
+# ---- GLOBAL SETTINGS ----
+# Your setting is not listed here? Don't worry, they are just placeholders!
+# This role will automatically pick up any setting starting with
+# "ucsc_genome_browser_setting_" supported by the UCSC Genome Browser
+# installation script. Any undefined settings will use the default value from
+# the installation script.
+ucsc_genome_browser_setting_APACHEDIR: "{{ undef() }}"
+ucsc_genome_browser_setting_HTDOCDIR: "{{ undef() }}"
+ucsc_genome_browser_setting_CGIBINDIR: "{{ undef() }}"
+ucsc_genome_browser_setting_TRASHDIR: "{{ undef() }}"
+ucsc_genome_browser_setting_MYSQLDIR: "{{ undef() }}"
+ucsc_genome_browser_setting_MYSQLADMIN: "{{ undef() }}"
+ucsc_genome_browser_setting_MYSQLUSER: "{{ undef() }}"
+ucsc_genome_browser_setting_MYSQL: "{{ undef() }}"
+ucsc_genome_browser_setting_SET_MYSQL_ROOT: "{{ undef() }}"
+ucsc_genome_browser_setting_HGDOWNLOAD: "{{ undef() }}"
+ucsc_genome_browser_setting_GBDBDIR: "{{ undef() }}"
+ucsc_genome_browser_setting_SEDINPLACE: "{{ undef() }}"
+ucsc_genome_browser_setting_UDRURL: "{{ undef() }}"
+ucsc_genome_browser_setting_RSYNC: "{{ undef() }}"
+ucsc_genome_browser_setting_RSYNCOPTS: "{{ undef() }}"
+ucsc_genome_browser_setting_COMPLETEFLAG: "{{ undef() }}"
+ucsc_genome_browser_setting_ONLYGENOMES: "{{ undef() }}"
+ucsc_genome_browser_setting_APTERR: "{{ undef() }}"
+# ---- END GLOBAL SETTINGS ----

@@ -1,0 +1,17 @@
+---
+- name: Collect all global settings into dictionary `ucsc_genome_browser_settings`
+  merge_vars:
+    alias: ucsc_genome_browser_setting
+    var: ucsc_genome_browser_settings
+
+- name: Patch global settings
+  register: ucsc_genome_browser_replace_result
+  failed_when: not ucsc_genome_browser_replace_result.changed
+  loop: "{{ ucsc_genome_browser_settings | dict2items }}"
+  when: item.value is defined
+  ansible.builtin.replace:
+    path: "{{ ucsc_genome_browser_install_script }}"
+    after: "# ---- GLOBAL DEFAULT SETTINGS ----"
+    before: "# ---- END GLOBAL DEFAULT SETTINGS ----"
+    regexp: "^\\s*({{ item.key }})=(.+)[^\\S\r\n]*$"
+    replace: "{{ item.key }}={{ item.value }}"

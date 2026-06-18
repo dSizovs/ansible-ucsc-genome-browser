@@ -1,6 +1,7 @@
 ---
 - name: Converge
   hosts: all
+  serial: 1  # avoids breakage of installation log livestreaming
   vars_files:
     - vars.yml
   tasks:

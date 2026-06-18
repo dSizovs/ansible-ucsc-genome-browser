@@ -10,5 +10,37 @@
 
 - name: Install UCSC Genome Browser
   when: not ucsc_genome_browser_installed
-  ansible.builtin.shell:
-    cmd: "bash {{ ucsc_genome_browser_install_script }} -b install"
+  block:
+    - name: Set path for UCSC Genome browser installation log
+      ansible.builtin.set_fact:
+        ucsc_genome_browser_installation_log: "{{ ucsc_genome_browser_tmpdir.path }}/ucsc_install.log"  # cleaned up after installation
+
+    - name: Pre-create UCSC Genome Browser installation log
+      ansible.builtin.copy:
+        content: ""
+        dest: "{{ ucsc_genome_browser_installation_log }}"
+        mode: "0600"
+      changed_when: false
+
+    - name: Install UCSC Genome Browser
+      ansible.builtin.shell:
+        cmd: "bash {{ ucsc_genome_browser_install_script }} -b install >> {{ ucsc_genome_browser_installation_log }} 2>&1"
+      async: 86400
+      poll: 0
+      register: ucsc_genome_browser_installation_job
+
+    - name: Stream UCSC Genome Browser installation log
+      stream_file:
+        file: "{{ ucsc_genome_browser_installation_log }}"
+        job_id: "{{ ucsc_genome_browser_installation_job.ansible_job_id }}"
+
+    - name: Get UCSC Genome Browser installation result
+      ansible.builtin.async_status:
+        jid: "{{ ucsc_genome_browser_installation_job.ansible_job_id }}"
+      register: ucsc_genome_browser_installation_result
+      changed_when: false
+
+    - name: Bubble up error if UCSC Genome Browser installation failed
+      ansible.builtin.fail:
+          msg: "UCSC Genome Browser installation failed."
+      when: ucsc_genome_browser_installation_result.rc != 0

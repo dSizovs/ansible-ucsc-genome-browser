@@ -1,0 +1,15 @@
+---
+- name: Ensure UCSC Genome Browser database directories exist
+  hosts: all
+  become: true
+  tasks:
+    - name: Create UCSC Genome Browser database directories
+      ansible.builtin.file:
+        path: "/{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - gbdb/
+        # - var/lib/mysql/

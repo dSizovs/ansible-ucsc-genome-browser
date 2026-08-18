@@ -85,7 +85,7 @@
     - name: Ensure UCSC Genome Browser can access the genomics database
       ansible.builtin.file:
         src: "{{ ucsc_genome_browser_setting_GBDBDIR }}"
-        dest: "{{ ucsc_genome_browser_gbdb_dir }}"
+        dest: "{{ ucsc_genome_browser_gbdb_dir.rstrip('/') }}"
         state: link
         owner: root
         group: root

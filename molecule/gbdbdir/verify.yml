@@ -21,7 +21,7 @@
       block:
         - name: Stat `/gbdb/` symlink
           ansible.builtin.stat:
-            path: /gbdb/
+            path: /gbdb
           register: gbdb_symlink_stat
 
         - name: Assert that `/gbdb/` is a symlink and points the correct location
@@ -29,5 +29,5 @@
             that:
               - gbdb_symlink_stat.stat.exists
               - gbdb_symlink_stat.stat.islnk
-              - gbdb_symlink_stat.stat.lnk_source == "/srv/ucsc_genome_browser/gbdb/"
+              - gbdb_symlink_stat.stat.lnk_source == "/srv/ucsc_genome_browser/gbdb"
             fail_msg: "`/gbdb/` is not a symlink pointing to the correct location. It should point to `{{ ucsc_genome_browser_setting_GBDBDIR }}`."

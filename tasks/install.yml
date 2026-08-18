@@ -64,3 +64,36 @@
   ansible.builtin.shell:
     cmd: "bash {{ ucsc_genome_browser_install_script }} -b online"
   changed_when: ucsc_genome_browser_offline_mode_check.rc == 0
+
+- name: Work around `GBDBDIR` setting being ignored by the installation script
+  vars:
+    ucsc_genome_browser_gbdb_dir: "/gbdb/"
+  block:
+    - name: Convert configured UCSC Genome Browser genomics database directory to absolute path
+      # also resolves it if defined as a shell expression, e.g. in terms of another variable
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: 'realpath --no-symlinks "$(echo {{ ucsc_genome_browser_setting_GBDBDIR | default(ucsc_genome_browser_gbdb_dir) }})"'
+      changed_when: false
+      register: ucsc_genome_browser_gbdb_dir_setting_resolved_absolute
+
+    - name: Check if hardcoded UCSC Genome Browser genomics database directory exists
+      ansible.builtin.stat:
+        path: "{{ ucsc_genome_browser_gbdb_dir }}"
+      register: ucsc_genome_browser_gbdb_dir_stat
+
+    - name: Ensure UCSC Genome Browser can access the genomics database
+      ansible.builtin.file:
+        src: "{{ ucsc_genome_browser_setting_GBDBDIR }}"
+        dest: "{{ ucsc_genome_browser_gbdb_dir.rstrip('/') }}"
+        state: link
+        owner: root
+        group: root
+        force: true
+        # if `/gbdb/` already exists and is a directory, the task will fail,
+        # despite `force: true`; that's probably a good idea, since it likely
+        # means there is already a genomics database in `/gbdb/`, and
+        # re-downloading this data is expensive
+      when:
+        # the resolved absolute path of the configured genomics database directory is not equal to the hardcoded path
+        - "ucsc_genome_browser_gbdb_dir_setting_resolved_absolute.stdout != ucsc_genome_browser_gbdb_dir.rstrip('/')"

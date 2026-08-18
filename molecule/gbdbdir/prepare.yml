@@ -1,0 +1,16 @@
+---
+- name: Ensure UCSC Genome Browser database directories exist
+  hosts: all
+  become: true
+  tasks:
+    - name: Create UCSC Genome Browser database directories
+      ansible.builtin.file:
+        path: "/srv/{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - ucsc_genome_browser/
+        - ucsc_genome_browser/gbdb/
+        - ucsc_genome_browser/meta/

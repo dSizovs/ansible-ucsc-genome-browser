@@ -1,3 +1,4 @@
+# Tests block "Work around `GBDBDIR` setting being ignored by the installation script"
 ---
 - name: Ensure UCSC Genome Browser is installed
   hosts: all
@@ -16,17 +17,17 @@
             that: ucsc_genome_browser_installation_flag.stat.exists
             fail_msg: "UCSC Genome Browser installation flag not found. Installation may have failed."
 
-    - name: Ensure `/gbdb/` is a directory
-      # "Work around `GBDBDIR` setting being ignored by the installation script" should have been skipped
+    - name: Ensure `/gbdb/` is a symlink to the correct location
       block:
-        - name: Stat `/gbdb/` directory
+        - name: Stat `/gbdb/` symlink
           ansible.builtin.stat:
-            path: /gbdb/
-          register: gbdb_dir_stat
+            path: /gbdb
+          register: gbdb_symlink_stat
 
-        - name: Assert that `/gbdb/` exists and is a directory
+        - name: Assert that `/gbdb/` is a symlink and points the correct location
           ansible.builtin.assert:
             that:
-              - gbdb_dir_stat.stat.exists
-              - gbdb_dir_stat.stat.isdir
-            fail_msg: "`/gbdb/` is not a directory. It should be a directory."
+              - gbdb_symlink_stat.stat.exists
+              - gbdb_symlink_stat.stat.islnk
+              - gbdb_symlink_stat.stat.lnk_source == "/srv/ucsc_genome_browser/gbdb"
+            fail_msg: "`/gbdb/` is not a symlink pointing to the correct location. It should point to `{{ ucsc_genome_browser_setting_GBDBDIR }}`."

@@ -20,6 +20,10 @@
       ansible.builtin.include_tasks:
           file: install.yml
 
+    - name: Include tasks that configure the UCSC Genome Browser
+      ansible.builtin.include_tasks:
+        file: configure.yml
+
     - name: Include tasks that download genome assemblies
       ansible.builtin.include_tasks:
         file: download.yml

@@ -1,0 +1,13 @@
+---
+- name: Apply UCSC Genome Browser hg.conf settings
+  # The installation script writes a hg.conf tailored to a private, local
+  # mirror. A few of those defaults are wrong for a public mirror; this task
+  # allows overriding any of them without patching the installer.
+  ansible.builtin.lineinfile:
+    path: "{{ ucsc_genome_browser_setting_APACHEDIR }}/cgi-bin/hg.conf"
+    regexp: "^#?\\s*{{ item.key | regex_escape }}\\s*="
+    line: "{{ item.key }}={{ item.value }}"
+    state: present
+  loop: "{{ ucsc_genome_browser_hg_conf_settings | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"

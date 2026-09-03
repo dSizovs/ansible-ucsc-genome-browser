@@ -39,3 +39,6 @@ ucsc_genome_browser_hg_conf_settings:
   # `browserSetup.sh` sets this to "off", which makes hgLogin submit its form
   # over plain http even when the page was served over https
   login.https: "on"
+  # not set by `browserSetup.sh` at all; without it `genarkUrl()` returns NULL
+  # before it queries the genark table, so no GenArk accession resolves
+  genarkHubPrefix: "https://hgdownload.soe.ucsc.edu/hubs"

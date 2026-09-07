@@ -20,9 +20,14 @@
       ansible.builtin.include_tasks:
           file: install.yml
 
+    - name: Include tasks that sync genome database files
+      ansible.builtin.include_tasks:
+        file: sync-gbdb.yml
+
     - name: Include tasks that download genome assemblies
       ansible.builtin.include_tasks:
         file: download.yml
+
   always:
     - name: Clean up temporary setup directory for UCSC Genome Browser role
       ansible.builtin.file:

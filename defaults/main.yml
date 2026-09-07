@@ -33,3 +33,8 @@ ucsc_genome_browser_setting_COMPLETEFLAG: "{{ undef() }}"
 ucsc_genome_browser_setting_ONLYGENOMES: "{{ undef() }}"
 ucsc_genome_browser_setting_APTERR: "{{ undef() }}"
 # ---- END GLOBAL SETTINGS ----
+
+# Paths under /gbdb/ to refresh from UCSC on each run, e.g. ["hg38/gencode/"].
+# Empty by default: syncing is opt-in, since some paths are very large.
+ucsc_genome_browser_gbdb_sync: []
+ucsc_genome_browser_gbdb_rsync_host: hgdownload.gi.ucsc.edu

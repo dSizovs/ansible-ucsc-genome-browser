@@ -1,0 +1,23 @@
+---
+- name: Sync genome database files from UCSC
+  # `browserSetup.sh mirror <db>` is all-or-nothing per assembly, so there is
+  # no way to refresh individual files for an assembly that is already
+  # installed. New releases of e.g. GENCODE add a file that the trackDb tables
+  # already reference; without it the track is silently dropped, with no error
+  # logged (see `addTrackIfDataAccessible()` in kent's `src/hg/lib/hdb.c`).
+  block:
+    - name: Ensure target directories exist
+      ansible.builtin.file:
+        path: "/gbdb/{{ item }}"
+        state: directory
+      loop: "{{ ucsc_genome_browser_gbdb_sync }}"
+
+    - name: Sync paths from the UCSC download server
+      ansible.builtin.command:
+        cmd: >-
+          rsync -a --itemize-changes
+          rsync://{{ ucsc_genome_browser_gbdb_rsync_host }}/gbdb/{{ item }}
+          /gbdb/{{ item }}
+      loop: "{{ ucsc_genome_browser_gbdb_sync }}"
+      register: ucsc_genome_browser_gbdb_sync_result
+      changed_when: ucsc_genome_browser_gbdb_sync_result.stdout | length > 0

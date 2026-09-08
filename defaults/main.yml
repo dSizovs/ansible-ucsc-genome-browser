@@ -34,7 +34,6 @@ ucsc_genome_browser_setting_ONLYGENOMES: "{{ undef() }}"
 ucsc_genome_browser_setting_APTERR: "{{ undef() }}"
 # ---- END GLOBAL SETTINGS ----
 
-# Settings applied to hg.conf after installation.
 ucsc_genome_browser_hg_conf_settings:
   # `browserSetup.sh` sets this to "off", which makes hgLogin submit its form
   # over plain http even when the page was served over https

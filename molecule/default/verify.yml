@@ -30,3 +30,20 @@
               - gbdb_dir_stat.stat.exists
               - gbdb_dir_stat.stat.isdir
             fail_msg: "`/gbdb/` is not a directory. It should be a directory."
+
+    - name: Ensure hg.conf settings have been applied
+      block:
+        - name: Read hg.conf file
+          ansible.builtin.slurp:
+            src: "{{ ucsc_genome_browser_setting_CGIBINDIR }}/hg.conf"
+          register: hg_conf_slurp
+
+        - name: Decode hg.conf content
+          ansible.builtin.set_fact:
+            hg_conf_decoded: "{{ hg_conf_slurp.content | b64decode }}"
+
+        - name: Assert hg.conf settings
+          ansible.builtin.assert:
+            that: "hg_conf_decoded is search('^{{ item.key }}={{ item.value }}$', multiline=True)"
+            fail_msg: "One or more hg.conf settings are missing or incorrect."
+          loop: "{{ ucsc_genome_browser_hg_conf_settings | dict2items }}"

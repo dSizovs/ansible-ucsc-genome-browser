@@ -62,7 +62,7 @@
 
         - name: Get trash cleanup timer state
           ansible.builtin.systemd_service:
-            name: ucsc-genome-browser-clean.timer
+            name: ucsc-genome-browser-trash-cleaner.timer
           register: clean_timer
 
         - name: Assert the trash cleanup timer is enabled and running

@@ -9,6 +9,10 @@ ucsc_genome_browser_offline_mode: false
 ucsc_genome_browser_assemblies: all  # e.g. ["mm10", "wuhCor1"]
 ucsc_genome_browser_assemblies_env: "{{ undef() }}"  # set environment variables (e.g. `OS=linux MACH=x86_64`) to workaround bugs
 
+# periodic trash directory cleanups are managed by a systemd timer
+ucsc_genome_browser_clean_enabled: true
+ucsc_genome_browser_clean_schedule: daily
+
 # ---- GLOBAL SETTINGS ----
 # Your setting is not listed here? Don't worry, they are just placeholders!
 # This role will automatically pick up any setting starting with
@@ -36,6 +40,3 @@ ucsc_genome_browser_setting_APTERR: "{{ undef() }}"
 # ---- END GLOBAL SETTINGS ----
 ucsc_genome_browser_hg_conf_settings: {}
   # login.https: "on"  # the setup script sets this to "off", which breaks hgLogin over https
-
-ucsc_genome_browser_clean_enabled: true
-ucsc_genome_browser_clean_schedule: daily

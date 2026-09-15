@@ -1,5 +1,6 @@
 ucsc_genome_browser_setup_script: https://raw.githubusercontent.com/ucscGenomeBrowser/kent/master/src/product/installer/browserSetup.sh
 ucsc_genome_browser_setup_script_checksum: "{{ undef() }}"  # e.g. "sha256:e47cd21c479a53d3157a4cd54f867dc26420d5f825d0b6954257e3ee3054882d"
+ucsc_genome_browser_setup_script_path: /usr/local/bin/browserSetup.sh  # install and execute setup script from this path
 
 ucsc_genome_browser_offline_mode: false
 # Offline mode: data is loaded only from the local Mysql database and file system.
@@ -36,6 +37,5 @@ ucsc_genome_browser_setting_APTERR: "{{ undef() }}"
 ucsc_genome_browser_hg_conf_settings: {}
   # login.https: "on"  # the setup script sets this to "off", which breaks hgLogin over https
 
-ucsc_genome_browser_setup_script_path: /usr/local/apache/browserSetup.sh
 ucsc_genome_browser_clean_enabled: true
 ucsc_genome_browser_clean_schedule: daily

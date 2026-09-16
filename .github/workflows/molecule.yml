@@ -32,6 +32,12 @@ jobs:
           sudo systemctl enable --now libvirtd
           sudo chmod a+rw /dev/kvm /var/run/libvirt/libvirt-sock
 
+      - name: Initialize Molecule libvirt storage pool
+        run: |
+          sudo virsh pool-define-as molecule dir --target /var/lib/libvirt/images
+          sudo virsh pool-start molecule
+          sudo virsh pool-autostart molecule
+
       - name: Install the libvirt Vagrant provider
         run: vagrant plugin install vagrant-libvirt
 

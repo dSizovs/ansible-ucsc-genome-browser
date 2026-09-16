@@ -1,16 +1,7 @@
 name: Molecule
 
 on:
-  workflow_dispatch:
-    inputs:
-      scenario:
-        description: Molecule scenario
-        required: true
-        type: choice
-        options:
-          - default
-          - gbdbdir
-          - wuhcor1
+  pull_request:  # test workflow before merging it
 
 jobs:
   test:
@@ -44,5 +35,11 @@ jobs:
       - name: Install `community.vagrant` Ansible collection
         run: ansible-galaxy collection install community.vagrant
 
-      - name: Run Ansible Molecule
-        run: molecule --base-config molecule/base.yml test --scenario-name "${{ inputs.scenario }}"
+      - name: Run default Molecule scenario
+        run: molecule --base-config molecule/base.yml test --scenario-name default
+
+      - name: Run gbdbdir Molecule scenario
+        run: molecule --base-config molecule/base.yml test --scenario-name gbdbdir
+
+      - name: Run wuhcor1 Molecule scenario
+        run: molecule --base-config molecule/base.yml test --scenario-name wuhcor1

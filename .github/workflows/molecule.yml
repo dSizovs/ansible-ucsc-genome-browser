@@ -1,10 +1,11 @@
-name: Molecule
+name: Ansible Molecule
 
 on:
   pull_request:  # test workflow before merging it
 
 jobs:
-  test:
+  molecule:
+    name: Tests
     runs-on: ubuntu-latest
 
     steps:

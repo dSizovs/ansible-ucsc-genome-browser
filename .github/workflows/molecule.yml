@@ -1,17 +1,20 @@
 name: Molecule
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: Molecule scenario
+        required: true
+        type: choice
+        options:
+          - default
+          - gbdbdir
+          - wuhcor1
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        scenario:
-          - default
-          - gbdbdir
-          - wuhcor1
 
     steps:
       - name: Check out repository
@@ -42,4 +45,4 @@ jobs:
         run: ansible-galaxy collection install community.vagrant
 
       - name: Run Ansible Molecule
-        run: molecule --base-config molecule/base.yml test --scenario-name "${{ matrix.scenario }}"
+        run: molecule --base-config molecule/base.yml test --scenario-name "${{ inputs.scenario }}"

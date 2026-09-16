@@ -11,6 +11,7 @@ jobs:
         scenario:
           - default
           - gbdbdir
+          - wuhcor1
 
     steps:
       - name: Check out repository

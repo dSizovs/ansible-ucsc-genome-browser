@@ -1,0 +1,12 @@
+---
+- name: Converge
+  hosts: all
+  serial: 1  # avoids breakage of installation log livestreaming
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: "Include usegalaxy_eu.ucsc_genome_browser"
+      ansible.builtin.include_role:
+        name: "usegalaxy_eu.ucsc_genome_browser"
+        apply:
+          become: true

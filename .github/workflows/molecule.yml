@@ -1,0 +1,46 @@
+name: Molecule
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario:
+          - default
+          - gbdbdir
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: .python-version
+
+      - name: Install the required Python packages
+        run: uv pip install --system -r requirements.txt -r molecule/requirements.txt
+
+      - name: Install Vagrant and libvirt
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libvirt-daemon-system libvirt-dev qemu-kvm vagrant
+
+      - name: Enable and start the libvirt service, authorize access to KVM and libvirt socket
+        run: |
+          sudo systemctl enable --now libvirtd
+          sudo chmod a+rw /dev/kvm /var/run/libvirt/libvirt-sock
+
+      - name: Install the libvirt Vagrant provider
+        run: vagrant plugin install vagrant-libvirt
+
+      - name: Install `community.vagrant` Ansible collection
+        run: ansible-galaxy collection install community.vagrant
+
+      - name: Run Ansible Molecule
+        run: molecule --base-config molecule/base.yml test --scenario-name "${{ matrix.scenario }}"

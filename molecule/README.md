@@ -55,6 +55,8 @@ uv pip install -r requirements.txt -r molecule/requirements.txt
 Install Vagrant and libvirt.
 
 ```shell
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(. /etc/os-release && echo "$VERSION_CODENAME") main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 apt-get update
 apt-get install --yes libvirt-daemon-system libvirt-dev qemu-kvm vagrant
 ```

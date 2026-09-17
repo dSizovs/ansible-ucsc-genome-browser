@@ -29,8 +29,7 @@ runs:
       uses: actions/cache@v6
       with:
         path: ~/.vagrant.d/boxes
-        key: setup-molecule-v1-${{ runner.os }}-${{ runner.arch }}-vagrant-boxes-${{ github.run_id }}
-        restore-keys: setup-molecule-v1-${{ runner.os }}-${{ runner.arch }}-vagrant-boxes-
+        key: setup-molecule-v1-${{ runner.os }}-${{ runner.arch }}-vagrant-boxes-${{ hashFiles('molecule/base.yml') }}
 
     - name: Restore cache (Ansible collections)
       uses: actions/cache@v6

@@ -68,7 +68,12 @@ runs:
 
     - name: Install the libvirt Vagrant provider
       shell: bash
-      run: vagrant plugin install vagrant-libvirt
+      run: |
+        if ! vagrant plugin list | grep -q 'vagrant-libvirt'; then
+          vagrant plugin install vagrant-libvirt
+        else
+          echo "vagrant-libvirt is already installed. Skipping build."
+        fi
 
     - name: Install `community.vagrant` Ansible collection
       shell: bash

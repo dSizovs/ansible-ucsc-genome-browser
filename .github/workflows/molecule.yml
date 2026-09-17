@@ -1,16 +1,7 @@
 name: Ansible Molecule
 
 on:
-  workflow_dispatch:
-    inputs:
-      scenario:
-        description: Molecule scenario
-        required: true
-        type: choice
-        options:
-          - default
-          - gbdbdir
-          # - wuhcor1  # requires more than ~40GB of disk space
+  pull_request:  # test workflow before merging it
 
 jobs:
   molecule:
@@ -24,5 +15,8 @@ jobs:
       - name: Setup Ansible Molecule
         uses: ./.github/actions/setup-molecule
 
-      - name: Run Ansible Molecule
-        run: molecule --base-config molecule/base.yml test --scenario-name "${{ inputs.scenario }}"
+      - name: Run default Molecule scenario
+        run: molecule --base-config molecule/base.yml test --scenario-name default
+
+      - name: Run gbdbdir Molecule scenario
+        run: molecule --base-config molecule/base.yml test --scenario-name gbdbdir

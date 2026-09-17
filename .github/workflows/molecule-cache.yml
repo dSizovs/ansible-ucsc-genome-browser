@@ -1,0 +1,18 @@
+name: Ansible Molecule (cache)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  cache:
+    name: Warm up cache for running Ansible Molecule
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Setup Ansible Molecule
+        uses: ./.github/actions/setup-molecule

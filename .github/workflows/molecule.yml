@@ -10,7 +10,7 @@ on:
         options:
           - default
           - gbdbdir
-          - wuhcor1
+          # - wuhcor1  # requires more than ~40GB of disk space
 
 jobs:
   molecule:

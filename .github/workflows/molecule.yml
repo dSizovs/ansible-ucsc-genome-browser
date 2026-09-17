@@ -16,7 +16,7 @@ jobs:
         uses: ./.github/actions/setup-molecule
 
       - name: Run default Molecule scenario
-        run: echo molecule --base-config molecule/base.yml test --scenario-name default
+        run: molecule --base-config molecule/base.yml test --scenario-name default
 
       - name: Run gbdbdir Molecule scenario
-        run: echo molecule --base-config molecule/base.yml test --scenario-name gbdbdir
+        run: molecule --base-config molecule/base.yml test --scenario-name gbdbdir

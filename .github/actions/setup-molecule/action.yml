@@ -14,6 +14,7 @@ runs:
       with:
         path: ~/.apt-cache
         key: setup-molecule-v1-${{ runner.os }}-${{ runner.arch }}-apt-${{ github.run_id }}
+        restore-keys: setup-molecule-v1-${{ runner.os }}-${{ runner.arch }}-apt-
 
     - name: Restore cache (Vagrant plugins)
       uses: actions/cache@v6
@@ -22,18 +23,21 @@ runs:
           ~/.vagrant.d/gems
           ~/.vagrant.d/plugins.json
         key: setup-molecule-v1-${{ runner.os }}-${{ runner.arch }}-vagrant-plugins-${{ github.run_id }}
+        restore-keys: setup-molecule-v1-${{ runner.os }}-${{ runner.arch }}-vagrant-plugins-
 
     - name: Restore cache (Vagrant boxes)
       uses: actions/cache@v6
       with:
         path: ~/.vagrant.d/boxes
         key: setup-molecule-v1-${{ runner.os }}-${{ runner.arch }}-vagrant-boxes-${{ github.run_id }}
+        restore-keys: setup-molecule-v1-${{ runner.os }}-${{ runner.arch }}-vagrant-boxes-
 
     - name: Restore cache (Ansible collections)
       uses: actions/cache@v6
       with:
         path: ~/.ansible/collections
         key: setup-molecule-v1-${{ runner.os }}-${{ runner.arch }}-ansible-collections-${{ github.run_id }}
+        restore-keys: setup-molecule-v1-${{ runner.os }}-${{ runner.arch }}-ansible-collections-
 
     - name: Install the required Python packages
       shell: bash

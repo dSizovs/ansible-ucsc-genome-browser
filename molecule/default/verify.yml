@@ -63,6 +63,7 @@
             fail_msg: "The trash cleaner timer is not enabled and active."
 
     - name: Ensure the trash cleaner removes stale files
+      become: true
       block:
         - name: Create a stale file in the trash directory
           ansible.builtin.file:

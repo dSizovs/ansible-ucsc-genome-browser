@@ -76,6 +76,20 @@
               - cgi_update_timer.status.ActiveState == "active"
             fail_msg: "The software update timer is not enabled and active."
 
+    - name: Ensure the genome assembly update timer is disabled by default
+      block:
+        - name: Get genome assembly update timer state
+          ansible.builtin.systemd_service:
+            name: ucsc-genome-browser-data-updater.timer
+          register: data_update_timer
+
+        - name: Assert the genome assembly update timer is disabled and not running
+          ansible.builtin.assert:
+            that:
+              - data_update_timer.status.UnitFileState == "disabled"
+              - data_update_timer.status.ActiveState == "inactive"
+            fail_msg: "The genome assembly update timer should be opt-in."
+
     - name: Ensure the trash cleaner removes stale files
       become: true
       block:

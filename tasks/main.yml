@@ -39,6 +39,11 @@
     - name: Include tasks that download genome assemblies
       ansible.builtin.include_tasks:
         file: download.yml
+
+    - name: Include tasks that set up genome assembly updates
+      # needs `all` resolved by download.yml
+      ansible.builtin.include_tasks:
+        file: data-update.yml
   always:
     - name: Clean up temporary setup directory for UCSC Genome Browser role
       ansible.builtin.file:

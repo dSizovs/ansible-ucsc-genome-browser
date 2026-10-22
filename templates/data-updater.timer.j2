@@ -1,0 +1,9 @@
+[Unit]
+Description=Periodically update UCSC Genome Browser genome assemblies
+
+[Timer]
+OnCalendar={{ ucsc_genome_browser_data_update_schedule }}
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -13,3 +13,23 @@
           ansible.builtin.assert:
             that: ucsc_genome_browser_installation_flag.stat.exists
             fail_msg: "UCSC Genome Browser installation flag not found. Installation may have failed."
+
+    - name: Ensure the genome assembly updater keeps the configured operation mode
+      become: true
+      block:
+        - name: Run the genome assembly updater
+          ansible.builtin.systemd_service:
+            name: ucsc-genome-browser-data-updater.service
+            state: started
+
+        - name: Check if offline mode is active
+          ansible.builtin.shell:
+            cmd: "grep -q '^#slow-db\\.' /usr/local/apache/cgi-bin/hg.conf"
+          register: offline_mode_check
+          failed_when: false
+          changed_when: false
+
+        - name: Assert on-the-fly mode is still active
+          ansible.builtin.assert:
+            that: offline_mode_check.rc != 0
+            fail_msg: "The genome assembly updater switched the browser to offline mode."

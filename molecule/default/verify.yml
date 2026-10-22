@@ -62,6 +62,20 @@
               - clean_timer.status.ActiveState == "active"
             fail_msg: "The trash cleaner timer is not enabled and active."
 
+    - name: Ensure the software update timer is enabled and running
+      block:
+        - name: Get software update timer state
+          ansible.builtin.systemd_service:
+            name: ucsc-genome-browser-cgi-updater.timer
+          register: cgi_update_timer
+
+        - name: Assert the software update timer is enabled and running
+          ansible.builtin.assert:
+            that:
+              - cgi_update_timer.status.UnitFileState == "enabled"
+              - cgi_update_timer.status.ActiveState == "active"
+            fail_msg: "The software update timer is not enabled and active."
+
     - name: Ensure the trash cleaner removes stale files
       become: true
       block:

@@ -1,0 +1,18 @@
+---
+- name: Install UCSC Genome Browser software update units
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/ucsc-genome-browser-{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - cgi-updater.service
+    - cgi-updater.timer
+
+- name: Enable UCSC Genome Browser software update timer
+  ansible.builtin.systemd_service:
+    name: ucsc-genome-browser-cgi-updater.timer
+    enabled: "{{ ucsc_genome_browser_cgi_update_enabled }}"
+    state: "{{ 'started' if ucsc_genome_browser_cgi_update_enabled else 'stopped' }}"
+    daemon_reload: true

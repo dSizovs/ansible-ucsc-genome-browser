@@ -32,6 +32,10 @@
       ansible.builtin.include_tasks:
         file: clean.yml
 
+    - name: Include tasks that set up software updates
+      ansible.builtin.include_tasks:
+        file: cgi-update.yml
+
     - name: Include tasks that download genome assemblies
       ansible.builtin.include_tasks:
         file: download.yml

@@ -48,6 +48,28 @@
             fail_msg: "One or more hg.conf settings are missing or incorrect."
           loop: "{{ ucsc_genome_browser_hg_conf_settings | dict2items }}"
 
+    - name: Ensure the API is served at the same short URLs as on the public website
+      block:
+        - name: Query the API through its CGI program
+          ansible.builtin.uri:
+            url: http://localhost/cgi-bin/hubApi/list/ucscGenomes
+            return_content: true
+          register: api_cgi_response
+
+        - name: Query the API through its short URL
+          ansible.builtin.uri:
+            url: http://localhost/list/ucscGenomes
+            return_content: true
+          register: api_short_url_response
+
+        - name: Assert the short URL answers the same as the CGI program and allows cross-origin requests
+          ansible.builtin.assert:
+            that:
+              - "'ucscGenomes' in api_short_url_response.json"
+              - api_short_url_response.json.ucscGenomes == api_cgi_response.json.ucscGenomes
+              - api_short_url_response.access_control_allow_origin == "*"
+            fail_msg: "/list/ucscGenomes does not answer the same as /cgi-bin/hubApi/list/ucscGenomes or lacks CORS headers."
+
     - name: Ensure the trash cleaner timer is enabled and running
       block:
         - name: Get trash cleaner timer state

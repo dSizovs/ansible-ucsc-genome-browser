@@ -10,3 +10,22 @@
   loop: "{{ ucsc_genome_browser_hg_conf_settings | dict2items }}"
   loop_control:
     label: "{{ item.key }}"
+
+- name: Serve the UCSC Genome Browser API at the same short URLs as the public website
+  ansible.builtin.blockinfile:
+    path: /etc/httpd/conf.d/001-browser.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: UCSC Genome Browser API short URLs"
+    insertbefore: "^</VirtualHost>"
+    block: |
+      RewriteEngine on
+      RewriteRule "^/list/(.*)$" "/cgi-bin/hubApi/list/$1" [L,PT]
+      RewriteRule "^/getData/(.*)$" "/cgi-bin/hubApi/getData/$1" [L,PT]
+      RewriteRule "^/findGenome(.*)$" "/cgi-bin/hubApi/findGenome$1" [L,PT]
+      RewriteRule "^/search$" "/cgi-bin/hubApi/search?%{QUERY_STRING}" [L,PT]
+      AllowEncodedSlashes NoDecode
+      <Location "/cgi-bin/hubApi">
+          Header set Access-Control-Allow-Origin "*"
+          Header set Access-Control-Allow-Headers "Range"
+      </Location>
+    state: "{{ 'present' if ucsc_genome_browser_api_short_urls_enabled else 'absent' }}"
+  notify: Reload Apache

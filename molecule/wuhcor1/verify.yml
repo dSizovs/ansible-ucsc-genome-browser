@@ -19,7 +19,7 @@
       block:
         - name: Run the genome assembly updater
           ansible.builtin.systemd_service:
-            name: ucsc-genome-browser-data-updater.service
+            name: ucsc-genome-browser-assembly-updater.service
             state: started
 
         - name: Check if offline mode is active

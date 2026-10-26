@@ -60,7 +60,7 @@
             that:
               - cgi_update_timer.status.UnitFileState == "enabled"
               - cgi_update_timer.status.ActiveState == "active"
-            fail_msg: "The software update timer is not enabled and active."
+            fail_msg: "The software update timer should be enabled by default."
 
     - name: Ensure the trash cleaner timer is enabled and running
       block:
@@ -101,7 +101,7 @@
             that: not stale_file_stat.stat.exists
             fail_msg: "The trash cleaner did not remove a file older than one day."
 
-    - name: Ensure the genome assembly update timer is disabled by default
+    - name: Ensure the genome assembly update timer is disabled
       block:
         - name: Get genome assembly update timer state
           ansible.builtin.systemd_service:
@@ -113,4 +113,4 @@
             that:
               - data_update_timer.status.UnitFileState == "disabled"
               - data_update_timer.status.ActiveState == "inactive"
-            fail_msg: "The genome assembly update timer should be opt-in."
+            fail_msg: "The genome assembly update timer should be disabled by default."

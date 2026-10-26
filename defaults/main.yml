@@ -12,13 +12,12 @@ ucsc_genome_browser_assemblies_update_enabled: false
 ucsc_genome_browser_assemblies_update_schedule: monthly
 ucsc_genome_browser_assemblies_update_assemblies: "{{ ucsc_genome_browser_assemblies }}"
 
+ucsc_genome_browser_cgi_update_enabled: true
+ucsc_genome_browser_cgi_update_schedule: weekly
 
 # periodic trash directory cleanups are managed by a systemd timer
 ucsc_genome_browser_clean_enabled: true
 ucsc_genome_browser_clean_schedule: daily
-
-ucsc_genome_browser_cgi_update_enabled: true
-ucsc_genome_browser_cgi_update_schedule: weekly
 
 # ---- GLOBAL SETTINGS ----
 # Your setting is not listed here? Don't worry, they are just placeholders!

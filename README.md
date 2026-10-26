@@ -28,12 +28,12 @@ ucsc_genome_browser_assemblies_update_enabled: false
 ucsc_genome_browser_assemblies_update_schedule: monthly
 ucsc_genome_browser_assemblies_update_assemblies: "{{ ucsc_genome_browser_assemblies }}"
 
+ucsc_genome_browser_cgi_update_enabled: true
+ucsc_genome_browser_cgi_update_schedule: weekly
+
 # periodic trash directory cleanups are managed by a systemd timer
 ucsc_genome_browser_clean_enabled: true
 ucsc_genome_browser_clean_schedule: daily
-
-ucsc_genome_browser_cgi_update_enabled: true
-ucsc_genome_browser_cgi_update_schedule: weekly
 ```
 
 Use `ucsc_genome_browser_setup_script` to pin the installer script to a
@@ -63,18 +63,18 @@ stopped while the assembly update is in progress; the UCSC Genome Browser is
 unavailable until the update finishes. Pick a quiet time via
 `ucsc_genome_browser_assemblies_update_schedule`.
 
-Another `systemd` timer removes old files from the trash directory by running
-the installer script's `clean` command. Set `ucsc_genome_browser_clean_enabled`
-to `false` to disable it, and `ucsc_genome_browser_clean_schedule` to any valid
-`OnCalendar` value to change how often it runs.
-
-A third `systemd` timer keeps the UCSC Genome Browser software up to date by
+A second `systemd` timer keeps the UCSC Genome Browser software up to date by
 running the installer script's `cgiUpdate` command. It updates the CGIs, the
 htdocs and the shared tables in `hgcentral` (BLAT servers, assembly list), but
 not the genome assemblies. `hg.conf` and `hg.conf.local` are left untouched.
 Set `ucsc_genome_browser_cgi_update_enabled` to `false` to disable it, and
 `ucsc_genome_browser_cgi_update_schedule` to any valid `OnCalendar` value to
 change how often it runs.
+
+Another `systemd` timer removes old files from the trash directory by running
+the installer script's `clean` command. Set `ucsc_genome_browser_clean_enabled`
+to `false` to disable it, and `ucsc_genome_browser_clean_schedule` to any valid
+`OnCalendar` value to change how often it runs.
 
 ## Dependencies
 

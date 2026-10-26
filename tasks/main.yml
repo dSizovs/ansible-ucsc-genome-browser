@@ -28,13 +28,13 @@
       ansible.builtin.include_tasks:
         file: configure.yml
 
-    - name: Include tasks that set up trash cleanup
-      ansible.builtin.include_tasks:
-        file: clean.yml
-
     - name: Include tasks that set up software updates
       ansible.builtin.include_tasks:
         file: cgi-update.yml
+
+    - name: Include tasks that set up trash cleanup
+      ansible.builtin.include_tasks:
+        file: clean.yml
 
     - name: Include tasks that download genome assemblies
       # includes genome assembly auto-update `systemd` units

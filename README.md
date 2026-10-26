@@ -63,10 +63,6 @@ stopped while the assembly update is in progress; the UCSC Genome Browser is
 unavailable until the update finishes. Pick a quiet time via
 `ucsc_genome_browser_assemblies_update_schedule`.
 
-The assemblies must be writable from the host the role runs on. If they are
-mounted read-only (e.g. shared from another machine), keep this timer disabled
-and update them where they are stored.
-
 Another `systemd` timer removes old files from the trash directory by running
 the installer script's `clean` command. Set `ucsc_genome_browser_clean_enabled`
 to `false` to disable it, and `ucsc_genome_browser_clean_schedule` to any valid

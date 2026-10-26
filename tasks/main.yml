@@ -38,10 +38,10 @@
 
     - name: Include tasks that download genome assemblies
       ansible.builtin.include_tasks:
-        file: download.yml
+        file: assemblies.yml
 
     - name: Include tasks that set up genome assembly updates
-      # needs `all` resolved by download.yml
+      # needs `all` resolved by assemblies.yml
       ansible.builtin.include_tasks:
         file: assembly-update.yml
   always:

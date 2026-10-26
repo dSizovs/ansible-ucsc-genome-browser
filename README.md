@@ -56,16 +56,12 @@ assemblies are installed.
 
 Genome assemblies can be kept up to date using a `systemd` timer, which is
 disabled by default. Set `ucsc_genome_browser_assemblies_update_enabled` to
-`true` to enable it. The installer script's `update` command cannot update the
-assemblies without also updating the UCSC Genome Browser software, so the timer
-runs the `mirror` command on the assemblies listed in
-`ucsc_genome_browser_assemblies_update_assemblies` (by default, those in
-`ucsc_genome_browser_assemblies`) and then restores the operation mode set by
-`ucsc_genome_browser_offline_mode`, since `mirror` always switches the browser
-to offline mode. MariaDB is stopped while the assemblies are synced, so the
-browser is unavailable until the update finishes; pick a quiet time with
-`ucsc_genome_browser_assemblies_update_schedule`. Software and genome assembly
-updates never run at the same time.
+`true` to enable it. Note that the installer script's `update` command cannot
+update the assemblies without also updating the UCSC Genome Browser software,
+therefore **every assembly update also involves a software update**. MariaDB is
+stopped while the assembly update is in progress; the UCSC Genome Browser is
+unavailable until the update finishes. Pick a quiet time via
+`ucsc_genome_browser_assemblies_update_schedule`.
 
 The assemblies must be writable from the host the role runs on. If they are
 mounted read-only (e.g. shared from another machine), keep this timer disabled

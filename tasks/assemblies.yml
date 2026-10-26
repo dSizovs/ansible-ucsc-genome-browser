@@ -22,3 +22,26 @@
   loop: "{{ ucsc_genome_browser_assemblies }}"
   loop_control:
     loop_var: assembly
+
+- name: Include tasks that restore the configured operation mode
+  # `mirror` always switches to offline mode
+  ansible.builtin.include_tasks:
+    file: operation-mode.yml
+
+- name: Install genome assembly update units
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/ucsc-genome-browser-{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - assembly-updater.service
+    - assembly-updater.timer
+
+- name: Enable genome assembly auto-update timer
+  ansible.builtin.systemd_service:
+    name: ucsc-genome-browser-assembly-updater.timer
+    enabled: "{{ ucsc_genome_browser_assemblies_update_enabled }}"
+    state: "{{ 'started' if ucsc_genome_browser_assemblies_update_enabled else 'stopped' }}"
+    daemon_reload: true

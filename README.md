@@ -24,6 +24,7 @@ ucsc_genome_browser_offline_mode: false
 # On-the-fly mode: data is loaded from UCSC when not present locally.
 
 ucsc_genome_browser_assemblies: all  # e.g. ["mm10", "wuhCor1"]
+ucsc_genome_browser_assemblies_udr: false
 ucsc_genome_browser_assemblies_update_enabled: false
 ucsc_genome_browser_assemblies_update_schedule: monthly
 ucsc_genome_browser_assemblies_update_assemblies: "{{ ucsc_genome_browser_assemblies }}"
@@ -53,6 +54,10 @@ default is the online mode.
 The genome assemblies to install can be customized using the
 `ucsc_genome_browser_assemblies` variable. By default, all available
 assemblies are installed.
+
+Genome assembly downloads use plain `rsync` over TCP by default. Set
+`ucsc_genome_browser_assemblies_udr` to `true` to use UDR (fast UDP) transfers
+instead.
 
 Genome assemblies can be kept up to date using a `systemd` timer, which is
 disabled by default. Set `ucsc_genome_browser_assemblies_update_enabled` to

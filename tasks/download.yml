@@ -18,7 +18,7 @@
 
 - name: Download genome assemblies
   ansible.builtin.shell:
-    cmd: "env {{ ucsc_genome_browser_assemblies_env | default('') }} bash {{ ucsc_genome_browser_install_script }} -b -u mirror {{ assembly }}"
+    cmd: "env {{ ucsc_genome_browser_assemblies_env | default('') }} bash {{ ucsc_genome_browser_install_script }} -b {{ '-u' if ucsc_genome_browser_assemblies_udr else '' }} mirror {{ assembly }}"
   loop: "{{ ucsc_genome_browser_assemblies }}"
   loop_control:
     loop_var: assembly

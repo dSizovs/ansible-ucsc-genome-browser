@@ -24,6 +24,7 @@ ucsc_genome_browser_offline_mode: false
 # On-the-fly mode: data is loaded from UCSC when not present locally.
 
 ucsc_genome_browser_assemblies: all  # e.g. ["mm10", "wuhCor1"]
+ucsc_genome_browser_assemblies_udr: false
 
 # periodic trash directory cleanups are managed by a systemd timer
 ucsc_genome_browser_clean_enabled: true
@@ -47,6 +48,10 @@ default is the online mode.
 The genome assemblies to install can be customized using the
 `ucsc_genome_browser_assemblies` variable. By default, all available
 assemblies are installed.
+
+Genome assembly downloads use plain `rsync` over TCP by default. Set
+`ucsc_genome_browser_assemblies_udr` to `true` to use UDR (fast UDP) transfers
+instead.
 
 A `systemd` timer removes old files from the trash directory by running the
 installer script's `clean` command. Set `ucsc_genome_browser_clean_enabled` to

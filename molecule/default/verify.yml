@@ -48,6 +48,20 @@
             fail_msg: "One or more hg.conf settings are missing or incorrect."
           loop: "{{ ucsc_genome_browser_hg_conf_settings | dict2items }}"
 
+    - name: Ensure the software update timer is enabled and running
+      block:
+        - name: Get software update timer state
+          ansible.builtin.systemd_service:
+            name: ucsc-genome-browser-cgi-updater.timer
+          register: cgi_update_timer
+
+        - name: Assert the software update timer is enabled and running
+          ansible.builtin.assert:
+            that:
+              - cgi_update_timer.status.UnitFileState == "enabled"
+              - cgi_update_timer.status.ActiveState == "active"
+            fail_msg: "The software update timer should be enabled by default."
+
     - name: Ensure the trash cleaner timer is enabled and running
       block:
         - name: Get trash cleaner timer state
@@ -86,3 +100,17 @@
           ansible.builtin.assert:
             that: not stale_file_stat.stat.exists
             fail_msg: "The trash cleaner did not remove a file older than one day."
+
+    - name: Ensure the genome assembly update timer is disabled
+      block:
+        - name: Get genome assembly update timer state
+          ansible.builtin.systemd_service:
+            name: ucsc-genome-browser-assembly-updater.timer
+          register: data_update_timer
+
+        - name: Assert the genome assembly update timer is disabled and not running
+          ansible.builtin.assert:
+            that:
+              - data_update_timer.status.UnitFileState == "disabled"
+              - data_update_timer.status.ActiveState == "inactive"
+            fail_msg: "The genome assembly update timer should be disabled by default."

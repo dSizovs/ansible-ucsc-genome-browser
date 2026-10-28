@@ -25,6 +25,12 @@ ucsc_genome_browser_offline_mode: false
 
 ucsc_genome_browser_assemblies: all  # e.g. ["mm10", "wuhCor1"]
 ucsc_genome_browser_assemblies_udr: false
+ucsc_genome_browser_assemblies_update_enabled: false
+ucsc_genome_browser_assemblies_update_schedule: monthly
+ucsc_genome_browser_assemblies_update_assemblies: "{{ ucsc_genome_browser_assemblies }}"
+
+ucsc_genome_browser_cgi_update_enabled: true
+ucsc_genome_browser_cgi_update_schedule: weekly
 
 # periodic trash directory cleanups are managed by a systemd timer
 ucsc_genome_browser_clean_enabled: true
@@ -53,9 +59,26 @@ Genome assembly downloads use plain `rsync` over TCP by default. Set
 `ucsc_genome_browser_assemblies_udr` to `true` to use UDR (fast UDP) transfers
 instead.
 
-A `systemd` timer removes old files from the trash directory by running the
-installer script's `clean` command. Set `ucsc_genome_browser_clean_enabled` to
-`false` to disable it, and `ucsc_genome_browser_clean_schedule` to any valid
+Genome assemblies can be kept up to date using a `systemd` timer, which is
+disabled by default. Set `ucsc_genome_browser_assemblies_update_enabled` to
+`true` to enable it. Note that the installer script's `update` command cannot
+update the assemblies without also updating the UCSC Genome Browser software,
+therefore **every assembly update also involves a software update**. MariaDB is
+stopped while the assembly update is in progress; the UCSC Genome Browser is
+unavailable until the update finishes. Pick a quiet time via
+`ucsc_genome_browser_assemblies_update_schedule`.
+
+A second `systemd` timer keeps the UCSC Genome Browser software up to date by
+running the installer script's `cgiUpdate` command. It updates the CGIs, the
+htdocs and the shared tables in `hgcentral` (BLAT servers, assembly list), but
+not the genome assemblies. `hg.conf` and `hg.conf.local` are left untouched.
+Set `ucsc_genome_browser_cgi_update_enabled` to `false` to disable it, and
+`ucsc_genome_browser_cgi_update_schedule` to any valid `OnCalendar` value to
+change how often it runs.
+
+Another `systemd` timer removes old files from the trash directory by running
+the installer script's `clean` command. Set `ucsc_genome_browser_clean_enabled`
+to `false` to disable it, and `ucsc_genome_browser_clean_schedule` to any valid
 `OnCalendar` value to change how often it runs.
 
 ## Dependencies

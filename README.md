@@ -57,13 +57,12 @@ installer script's `clean` command. Set `ucsc_genome_browser_clean_enabled` to
 `OnCalendar` value to change how often it runs.
 
 The [REST API](https://genome.ucsc.edu/goldenPath/help/api.html) is served by
-the `hubApi` CGI program. As on the public website, Apache rewrite rules let
-it be queried at short URLs (`/list/...`, `/getData/...`, `/findGenome...`
-and `/search`), so that `/list/ucscGenomes` answers the same as
-`/cgi-bin/hubApi/list/ucscGenomes`, and its responses allow cross-origin
-requests. The rules are added to the virtual host that the installer script
-defines in `/etc/httpd/conf.d/001-browser.conf`. Set
-`ucsc_genome_browser_api_short_urls_enabled` to `false` to remove them.
+the `hubApi` CGI program at `/cgi-bin/hubApi/`. The variable
+`ucsc_genome_browser_api_short_urls_enabled` (defaults to `true`), enables
+short URLs for the API via Apache rewrite rules, so that the API endpoints
+`/list`, `/getData`, `/findGenome` and `/search` are also served at `/` and
+cross-origin requests allow. For example, with short URLs enabled,
+`/list/ucscGenomes` answers the same as `/cgi-bin/hubApi/list/ucscGenomes`.
 
 ## Dependencies
 

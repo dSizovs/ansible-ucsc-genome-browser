@@ -1,6 +1,8 @@
 ---
 - name: Ensure UCSC Genome Browser is installed
   hosts: all
+  vars_files:
+    - vars.yml
   tasks:
     - name: Check if UCSC Genome Browser is already installed
       block:

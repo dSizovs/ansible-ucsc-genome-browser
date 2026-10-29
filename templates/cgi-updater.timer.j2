@@ -1,0 +1,9 @@
+[Unit]
+Description=Periodically update UCSC Genome Browser software
+
+[Timer]
+OnCalendar={{ ucsc_genome_browser_cgi_update_schedule }}
+Persistent=true
+
+[Install]
+WantedBy=timers.target

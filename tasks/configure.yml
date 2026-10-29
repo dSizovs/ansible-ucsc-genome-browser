@@ -10,3 +10,12 @@
   loop: "{{ ucsc_genome_browser_hg_conf_settings | dict2items }}"
   loop_control:
     label: "{{ item.key }}"
+
+- name: Serve the UCSC Genome Browser API also via short URLs
+  ansible.builtin.blockinfile:
+    path: /etc/httpd/conf.d/001-browser.conf  # created by installation script
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: UCSC Genome Browser API short URLs"
+    insertbefore: "^</VirtualHost>"
+    block: "{{ lookup('ansible.builtin.template', 'hubApi.conf.j2') }}"
+    state: "{{ 'present' if ucsc_genome_browser_api_short_urls_enabled else 'absent' }}"
+  notify: Reload Apache

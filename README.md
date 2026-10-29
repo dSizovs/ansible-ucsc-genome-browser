@@ -35,6 +35,9 @@ ucsc_genome_browser_cgi_update_schedule: weekly
 # periodic trash directory cleanups are managed by a systemd timer
 ucsc_genome_browser_clean_enabled: true
 ucsc_genome_browser_clean_schedule: daily
+
+# short API URLs, e.g. /list/ucscGenomes
+ucsc_genome_browser_api_short_urls_enabled: true
 ```
 
 Use `ucsc_genome_browser_setup_script` to pin the installer script to a
@@ -80,6 +83,14 @@ Another `systemd` timer removes old files from the trash directory by running
 the installer script's `clean` command. Set `ucsc_genome_browser_clean_enabled`
 to `false` to disable it, and `ucsc_genome_browser_clean_schedule` to any valid
 `OnCalendar` value to change how often it runs.
+
+The [REST API](https://genome.ucsc.edu/goldenPath/help/api.html) is served by
+the `hubApi` CGI program at `/cgi-bin/hubApi/`. The variable
+`ucsc_genome_browser_api_short_urls_enabled` (defaults to `true`), enables
+short URLs for the API via Apache rewrite rules, so that the API endpoints
+`/list`, `/getData`, `/findGenome` and `/search` are also served at `/` and
+cross-origin requests allow. For example, with short URLs enabled,
+`/list/ucscGenomes` answers the same as `/cgi-bin/hubApi/list/ucscGenomes`.
 
 ## Dependencies
 

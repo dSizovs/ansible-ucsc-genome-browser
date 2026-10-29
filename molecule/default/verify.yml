@@ -48,6 +48,75 @@
             fail_msg: "One or more hg.conf settings are missing or incorrect."
           loop: "{{ ucsc_genome_browser_hg_conf_settings | dict2items }}"
 
+    - name: Ensure API is served via short URLs, as on the public website
+      block:
+        - name: Query a non-API path
+          ansible.builtin.uri:
+            url: http://localhost/nonexistent-api-path
+            follow_redirects: none
+            status_code: 404
+          register: api_non_api_response
+
+        - name: Query the API through its CGI program
+          ansible.builtin.uri:
+            url: http://localhost/cgi-bin/hubApi/list/ucscGenomes
+            return_content: true
+          register: api_cgi_response
+
+        - name: Query the API through its short URL
+          ansible.builtin.uri:
+            url: http://localhost/list/ucscGenomes
+            return_content: true
+            follow_redirects: none
+          register: api_short_url_response
+
+        - name: Assert the short URL answers the same as the CGI program and allows cross-origin requests
+          ansible.builtin.assert:
+            that:
+              - api_non_api_response.status == 404  # non-API paths should not work
+              - api_short_url_response.status == 200
+              - "'ucscGenomes' in api_short_url_response.json"
+              - api_short_url_response.json.ucscGenomes == api_cgi_response.json.ucscGenomes
+              - api_short_url_response.access_control_allow_origin == "*"
+            fail_msg: "`/list/ucscGenomes` does not answer the same as `/cgi-bin/hubApi/list/ucscGenomes`, or lacks CORS headers or non-API path does not return 404."
+
+        - name: Query a non-API path on the API subdomain
+          ansible.builtin.uri:
+            url: http://localhost/nonexistent-api-path
+            headers:
+              Host: api.genome-browser
+            return_content: true
+            follow_redirects: none
+          register: api_subdomain_catch_all_response
+
+        - name: Query the API through its CGI program on API subdomain
+          ansible.builtin.uri:
+            url: http://localhost/cgi-bin/hubApi/list/ucscGenomes
+            headers:
+              Host: api.genome-browser
+            return_content: true
+          register: api_subdomain_cgi_response
+
+        - name: Query the API through its short URL on API subdomain
+          ansible.builtin.uri:
+            url: http://localhost/list/ucscGenomes
+            headers:
+              Host: api.genome-browser
+            return_content: true
+            follow_redirects: none
+          register: api_subdomain_short_url_response
+
+        - name: Assert the API subdomain serves the API and its documentation
+          ansible.builtin.assert:
+            that:
+              - api_subdomain_catch_all_response.status == 200
+              - "'hubApi' in api_subdomain_catch_all_response.content"
+              - api_subdomain_cgi_response.status == 200
+              - api_subdomain_short_url_response.status == 200
+              - api_subdomain_short_url_response.json.ucscGenomes == api_cgi_response.json.ucscGenomes
+              - api_subdomain_short_url_response.access_control_allow_origin == "*"
+            fail_msg: "The `api.` subdomain does not serve the API, its CORS headers, or the API documentation, or the catch-all leaks onto the main hostname."
+
     - name: Ensure the software update timer is enabled and running
       block:
         - name: Get software update timer state

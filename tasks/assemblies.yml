@@ -1,0 +1,47 @@
+---
+- name: Get list of all genome assemblies
+  when: ucsc_genome_browser_assemblies == "all"
+  block:
+    - name: Ensure `jq` is installed
+      ansible.builtin.package:
+        name: jq
+        state: present
+
+    - name: Get list of all genome assemblies from UCSC Genome Browser API
+      ansible.builtin.shell:
+        cmd: "curl -L 'https://api.genome.ucsc.edu/list/ucscGenomes' | jq -r '.ucscGenomes | keys'"
+      register: ucsc_genome_browser_assemblies_from_api
+
+    - name: Convert to JSON
+      ansible.builtin.set_fact:
+        ucsc_genome_browser_assemblies: "{{ ucsc_genome_browser_assemblies_from_api.stdout | from_json }}"
+
+- name: Download genome assemblies
+  ansible.builtin.shell:
+    cmd: "env {{ ucsc_genome_browser_assemblies_env | default('') }} bash {{ ucsc_genome_browser_install_script }} -b {{ '-u' if ucsc_genome_browser_assemblies_udr else '' }} mirror {{ assembly }}"
+  loop: "{{ ucsc_genome_browser_assemblies }}"
+  loop_control:
+    loop_var: assembly
+
+- name: Include tasks that restore the configured operation mode
+  # `mirror` always switches to offline mode
+  ansible.builtin.include_tasks:
+    file: operation-mode.yml
+
+- name: Install genome assembly update units
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/ucsc-genome-browser-{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - assembly-updater.service
+    - assembly-updater.timer
+
+- name: Enable genome assembly auto-update timer
+  ansible.builtin.systemd_service:
+    name: ucsc-genome-browser-assembly-updater.timer
+    enabled: "{{ ucsc_genome_browser_assemblies_update_enabled }}"
+    state: "{{ 'started' if ucsc_genome_browser_assemblies_update_enabled else 'stopped' }}"
+    daemon_reload: true

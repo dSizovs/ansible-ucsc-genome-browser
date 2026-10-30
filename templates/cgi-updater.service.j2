@@ -1,0 +1,8 @@
+[Unit]
+Description=Update UCSC Genome Browser software
+Wants=network-online.target
+After=network-online.target mariadb.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/flock /run/lock/ucsc-genome-browser-update.lock {{ ucsc_genome_browser_setup_script_path }} -b cgiUpdate

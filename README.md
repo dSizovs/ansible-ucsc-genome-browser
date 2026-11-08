@@ -100,7 +100,7 @@ the `hubApi` CGI program at `/cgi-bin/hubApi/`. The variable
 `ucsc_genome_browser_api_short_urls_enabled` (defaults to `true`), enables
 short URLs for the API via Apache rewrite rules, so that the API endpoints
 `/list`, `/getData`, `/findGenome` and `/search` are also served at `/` and
-cross-origin requests allow. For example, with short URLs enabled,
+cross-origin requests are allowed. For example, with short URLs enabled,
 `/list/ucscGenomes` answers the same as `/cgi-bin/hubApi/list/ucscGenomes`.
 
 Set `ucsc_genome_browser_bottleneck_enabled` to `true` to rate-limit hyperactive

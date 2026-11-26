@@ -48,6 +48,28 @@
             fail_msg: "One or more hg.conf settings are missing or incorrect."
           loop: "{{ ucsc_genome_browser_hg_conf_settings | dict2items }}"
 
+    - name: Ensure private hg.conf settings have been applied
+      become: true
+      block:
+        - name: Read hg.conf.private file
+          ansible.builtin.slurp:
+            src: "{{ ucsc_genome_browser_setting_CGIBINDIR }}/hg.conf.private"
+          register: hg_conf_private_slurp
+
+        - name: Stat hg.conf.private file
+          ansible.builtin.stat:
+            path: "{{ ucsc_genome_browser_setting_CGIBINDIR }}/hg.conf.private"
+          register: hg_conf_private_stat
+
+        - name: Assert hg.conf.private is included, readable only by Apache and holds the settings
+          ansible.builtin.assert:
+            that:
+              - hg_conf_decoded is search('^include hg.conf.private$', multiline=True)
+              - hg_conf_private_stat.stat.mode == "0640"
+              - hg_conf_private_stat.stat.gr_name == "apache"
+              - (hg_conf_private_slurp.content | b64decode) == "login.cookieSalt=molecule-salt\n"
+            fail_msg: "hg.conf.private is missing, not included, or has wrong permissions or content."
+
     - name: Ensure FreeType font support is enabled
       vars:
         freetype_dir_setting: "{{ hg_conf_decoded | regex_search('^freeTypeDir=(.+)$', '\\1', multiline=True) | first }}"
@@ -72,27 +94,6 @@
               - freetype_dir_stat.stat.exists
               - freetype_dir_stat.stat.isdir
             fail_msg: "FreeType font directory {{ freetype_dir }} not found."
-    - name: Ensure private hg.conf settings have been applied
-      become: true
-      block:
-        - name: Read hg.conf.private file
-          ansible.builtin.slurp:
-            src: "{{ ucsc_genome_browser_setting_CGIBINDIR }}/hg.conf.private"
-          register: hg_conf_private_slurp
-
-        - name: Stat hg.conf.private file
-          ansible.builtin.stat:
-            path: "{{ ucsc_genome_browser_setting_CGIBINDIR }}/hg.conf.private"
-          register: hg_conf_private_stat
-
-        - name: Assert hg.conf.private is included, readable only by Apache and holds the settings
-          ansible.builtin.assert:
-            that:
-              - hg_conf_decoded is search('^include hg.conf.private$', multiline=True)
-              - hg_conf_private_stat.stat.mode == "0640"
-              - hg_conf_private_stat.stat.gr_name == "apache"
-              - (hg_conf_private_slurp.content | b64decode) == "login.cookieSalt=molecule-salt\n"
-            fail_msg: "hg.conf.private is missing, not included, or has wrong permissions or content."
 
     - name: Ensure API is served via short URLs, as on the public website
       block:
@@ -215,13 +216,6 @@
             that: not stale_file_stat.stat.exists
             fail_msg: "The trash cleaner did not remove a file older than one day."
 
-    - name: Ensure the custom track cleaner removes stale custom tracks
-      become: true
-      block:
-        - name: Get custom track cleaner timer state
-          ansible.builtin.systemd_service:
-            name: ucsc-genome-browser-custom-track-cleaner.timer
-          register: custom_track_clean_timer
     - name: Ensure the backup service backs up user data and removes old backups
       become: true
       vars:
@@ -238,12 +232,52 @@
             state: directory
             mode: "0755"
 
-        - name: Create a stale custom track file
-          ansible.builtin.file:
-            path: "{{ ucsc_genome_browser_setting_TRASHDIR }}/ct/molecule-stale-file"
         - name: Create an old backup
           ansible.builtin.file:
             path: "{{ backup_dir }}/molecule-old-backup"
+            state: touch
+            access_time: "202001010000.00"
+            modification_time: "202001010000.00"
+
+        - name: Run the backup service  # fails if the dump fails
+          ansible.builtin.systemd_service:
+            name: ucsc-genome-browser-backup.service
+            state: started
+
+        - name: Find backups
+          ansible.builtin.find:
+            paths: "{{ backup_dir }}"
+          register: backups
+
+        - name: Assert the backup timer is enabled and the backups were made
+          vars:
+            names: "{{ backups.files | map(attribute='path') | map('basename') | list }}"
+          ansible.builtin.assert:
+            that:
+              - backup_timer.status.UnitFileState == "enabled"
+              - backup_timer.status.ActiveState == "active"
+              - names | select('match', 'databases-.*\\.sql\\.gz$') | length == 1
+              - names | select('match', 'ct-.*\\.tar\\.gz$') | length == 1
+              - "'molecule-old-backup' not in names"
+            fail_msg: "The backup timer is not active, a backup is missing, or an old backup was not removed."
+
+    - name: Ensure the custom track cleaner removes stale custom tracks
+      become: true
+      block:
+        - name: Get custom track cleaner timer state
+          ansible.builtin.systemd_service:
+            name: ucsc-genome-browser-custom-track-cleaner.timer
+          register: custom_track_clean_timer
+
+        - name: Ensure the custom track directory exists
+          ansible.builtin.file:
+            path: "{{ ucsc_genome_browser_setting_TRASHDIR }}/ct"
+            state: directory
+            mode: "0755"
+
+        - name: Create a stale custom track file
+          ansible.builtin.file:
+            path: "{{ ucsc_genome_browser_setting_TRASHDIR }}/ct/molecule-stale-file"
             state: touch
             access_time: "202001010000.00"
             modification_time: "202001010000.00"
@@ -279,27 +313,6 @@
               - not stale_ct_file_stat.stat.exists
               - stale_ct_table.stdout == ""
             fail_msg: "The custom track cleaner timer is not active or it did not remove a stale file or table."
-        - name: Run the backup service  # fails if the dump fails
-          ansible.builtin.systemd_service:
-            name: ucsc-genome-browser-backup.service
-            state: started
-
-        - name: Find backups
-          ansible.builtin.find:
-            paths: "{{ backup_dir }}"
-          register: backups
-
-        - name: Assert the backup timer is enabled and the backups were made
-          vars:
-            names: "{{ backups.files | map(attribute='path') | map('basename') | list }}"
-          ansible.builtin.assert:
-            that:
-              - backup_timer.status.UnitFileState == "enabled"
-              - backup_timer.status.ActiveState == "active"
-              - names | select('match', 'databases-.*\\.sql\\.gz$') | length == 1
-              - names | select('match', 'ct-.*\\.tar\\.gz$') | length == 1
-              - "'molecule-old-backup' not in names"
-            fail_msg: "The backup timer is not active, a backup is missing, or an old backup was not removed."
 
     - name: Ensure the genome assembly update timer is disabled
       block:

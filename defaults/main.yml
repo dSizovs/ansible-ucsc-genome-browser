@@ -25,6 +25,7 @@ ucsc_genome_browser_custom_tracks_clean_enabled: true
 ucsc_genome_browser_custom_tracks_clean_schedule: daily
 ucsc_genome_browser_custom_tracks_clean_age: 2880  # 120 days, keeps custom tracks in saved sessions
 ucsc_genome_browser_dbtrash_url: https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64.v479/dbTrash  # newer builds segfault
+
 # user data (`hgcentral`, `customTrash`, trash `ct/`) is backed up by a systemd timer
 ucsc_genome_browser_backup_enabled: true
 ucsc_genome_browser_backup_schedule: daily
@@ -44,6 +45,7 @@ ucsc_genome_browser_bottleneck_subnets: ["127.0.0.1/32", "::1/128"]  # allowed t
 ucsc_genome_browser_bottleneck_penalty: 75  # ms per access
 ucsc_genome_browser_bottleneck_recovery: 10  # ms recovered per idle second
 ucsc_genome_browser_bottleneck_except: []  # never throttled
+
 # Plausible analytics, off when the domain is empty
 ucsc_genome_browser_plausible_domain: ""  # e.g. genome-browser.galaxyproject.eu
 ucsc_genome_browser_plausible_server: https://plausible.galaxyproject.eu
